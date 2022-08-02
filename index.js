@@ -1,44 +1,73 @@
 const { Requester, Validator } = require('@chainlink/external-adapter')
+const qs = require('qs')
 
 const customParams = {
-  url: ['url'],
-  selector: ['selector'],
-  challenge: ['challenge'],
   endpoint: false
 }
 
 const createRequest = (input, callback) => {
   const validator = new Validator(callback, input, customParams)
   const jobRunID = validator.validated.id
-  const serviceURL = "${process.env.BROWSERLESS_URL}/scrape?stealth"
-  const url = validator.validated.data.url
-  const challenge = validator.validated.data.challenge
-  const elements = [{ selector: validator.validated.data.selector }]
+  const loginURL = `${process.env.VUE_APP_VENLY_LOGIN_URL}/auth/realms/Arkane/protocol/openid-connect/token`
+  const serviceURL = `${process.env.VUE_APP_VENLY_API_URL}/api/wallets`
+  const walletType = 'WHITE_LABEL'
+  const secretType = 'MATIC'
+  const identifier = 'type=unrecoverable'
+  const description = 'a wallet'
+  const pincode = '1234'
 
   const params = {
-    url,
-    elements
+    walletType,
+    secretType,
+    identifier,
+    description,
+    pincode
   }
 
-  const config = {
+  const login_config = {
     method: 'post',
-    url: serviceURL,
-    data: params,
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    url: loginURL,
+    data: qs.stringify({
+      'grant_type': 'client_credentials',
+      'client_id': process.env.VUE_APP_VENLY_CLIENT_ID,
+      'client_secret': process.env.VUE_APP_SECRET_ID
+    }),
     timeout: 20000
   }
 
-  Requester.request(config)
-    .then(response => {
-      console.log(response)
-      let match = false
-      if (response.data && response.data.data[0] && response.data.data[0].results[0]) {
-        match = response.data.data[0].results[0].html.includes(challenge)
-      }
-      callback(response.status, Requester.success(jobRunID, {data: {result: match}}))
-    })
-    .catch(error => {
-      callback(200, Requester.success(jobRunID, {data: {result: false}}))
-    })
+
+
+  Requester.request(login_config)
+      .then(response => {
+        const token = response.data.access_token
+        console.log("token: ")
+        console.log(token)
+
+        const config = {
+          method: 'post',
+          headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${token}` },
+          url: serviceURL,
+          data:  params,
+          timeout: 20000
+        }
+
+        console.log(config)
+
+        Requester.request(config)
+            .then(response => {
+              console.log(response.data.result.address)
+              let address = null
+              if (response.data && response.data.result)
+                address = response.data.result.address
+              callback(response.status, Requester.success(jobRunID, {data: {result: address}}))
+            })
+            .catch(error => {
+              callback(200, Requester.success(jobRunID, {data: {result: null}}))
+            })
+      }).catch(error => {
+        callback(200, Requester.success(jobRunID, {data: {result: null}}))
+      })
 }
 
 module.exports.createRequest = createRequest
