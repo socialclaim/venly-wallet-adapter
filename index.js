@@ -52,15 +52,12 @@ const createRequest = (input, callback) => {
           timeout: 20000
         }
 
-        console.log(config)
-
         Requester.request(config)
             .then(response => {
-              console.log(response.data.result.address)
-              let address = null
+              let id = null
               if (response.data && response.data.result)
-                address = response.data.result.address
-              callback(response.status, Requester.success(jobRunID, {data: {result: address}}))
+                id = response.data.result.id.replace(/-/g,'')
+              callback(response.status, Requester.success(jobRunID, {data: {result: id}}))
             })
             .catch(error => {
               callback(200, Requester.success(jobRunID, {data: {result: null}}))
