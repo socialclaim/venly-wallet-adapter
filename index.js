@@ -2,6 +2,7 @@ const { Requester, Validator } = require('@chainlink/external-adapter')
 const qs = require('qs')
 
 const customParams = {
+  url: ['url'],
   endpoint: false
 }
 
@@ -12,16 +13,16 @@ const createRequest = (input, callback) => {
   const serviceURL = `${process.env.VUE_APP_VENLY_API_URL}/api/wallets`
   const walletType = 'WHITE_LABEL'
   const secretType = 'MATIC'
-  const identifier = 'type=unrecoverable'
-  const description = 'a wallet'
+  const identifier = 'socialclaim'
   const pincode = '1234'
+  const url = validator.validated.data.url
 
   const params = {
     walletType,
     secretType,
     identifier,
-    description,
-    pincode
+    pincode,
+    'description': url
   }
 
   const login_config = {
