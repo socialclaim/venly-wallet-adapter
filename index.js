@@ -23,11 +23,6 @@ const createRequest = (input, callback) => {
   const pincode = '1234'
   const url = validator.validated.data.url
 
-  console.log(mode)
-  console.log(mode)
-  console.log(walletID)
-  console.log(recipient)
-
   const params = {
     walletType,
     secretType,
@@ -58,7 +53,7 @@ const createRequest = (input, callback) => {
           data:  params,
           timeout: 20000
         }
-        if (mode == 'getWallets') {
+        if (mode === 'getWallets') {
           Requester.request(config)
               .then(response => {
                 let id = null
@@ -69,7 +64,7 @@ const createRequest = (input, callback) => {
               .catch(error => {
                 callback(200, Requester.success(jobRunID, {data: {result: null}}))
               })
-        } else if (mode == 'executeTransfer') {
+        } else if (mode === 'executeTransfer') {
 
         } else {
           callback(200)
