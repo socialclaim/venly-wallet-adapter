@@ -19,7 +19,7 @@ const createRequest = (input, callback) => {
   const serviceURL = `${process.env.VUE_APP_VENLY_API_URL}/api/wallets`
   const walletType = 'WHITE_LABEL'
   const secretType = 'MATIC'
-  const identifier = 'socialclaim'
+  const identifier = `${process.env.VUE_APP_SOCIALCLAIM_VENLY_IDENTIFIER}`
   const pincode = '1234'
   const url = validator.validated.data.url
 

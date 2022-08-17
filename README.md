@@ -62,6 +62,7 @@ export VUE_APP_VENLY_LOGIN_URL="https://login-staging.arkane.network"
 export VUE_APP_VENLY_CLIENT_ID="Testaccount-capsule"
 export VUE_APP_SECRET_ID="xxxxx"
 export VUE_APP_APPLICATION_ID="xxxxx"
+export VUE_APP_SOCIALCLAIM_VENLY_IDENTIFIER="identifier"
 ```
 
 Run : (defaults to port 8081):
