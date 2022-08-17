@@ -2,19 +2,13 @@ const { Requester, Validator } = require('@chainlink/external-adapter')
 const qs = require('qs')
 
 const customParams = {
-  url: ['url'],
-  mode: ['mode'],
-  endpoint: false,
-  recipient: false,
-  walletID: false
+  url: ['url']
 }
 
 const createRequest = (input, callback) => {
   const validator = new Validator(callback, input, customParams)
   const jobRunID = validator.validated.id
   const mode = validator.validated.data.mode
-  const walletID = validator.validated.data.walletID
-  const recipient = validator.validated.data.recipient
   const loginURL = `${process.env.VUE_APP_VENLY_LOGIN_URL}/auth/realms/Arkane/protocol/openid-connect/token`
   const serviceURL = `${process.env.VUE_APP_VENLY_API_URL}/api/wallets`
   const walletType = 'WHITE_LABEL'
@@ -53,7 +47,6 @@ const createRequest = (input, callback) => {
           data:  params,
           timeout: 20000
         }
-        if (mode === 'getWallets') {
           Requester.request(config)
               .then(response => {
                 let id = null
@@ -64,11 +57,6 @@ const createRequest = (input, callback) => {
               .catch(error => {
                 callback(200, Requester.success(jobRunID, {data: {result: null}}))
               })
-        } else if (mode === 'executeTransfer') {
-
-        } else {
-          callback(200)
-        }
       }).catch(error => {
         callback(200, Requester.success(jobRunID, {data: {result: null}}))
       })
